@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/auth';
+import Image from 'next/image';
 import {
   LayoutDashboard, Package, Warehouse, ArrowDownToLine,
   Truck, ArrowLeftRight, Sliders, BookOpen, LogOut, Menu, X
@@ -36,14 +37,18 @@ export function Sidebar() {
 
   return (
     <aside className={cn(
-      'flex flex-col h-full bg-surface border-r border-border transition-all duration-300',
+      'flex flex-col h-full border-r transition-all duration-300',
       collapsed ? 'w-16' : 'w-56'
-    )}>
+    )} style={{ backgroundColor: '#F9FAFB', borderColor: '#E5E7EB' }}>
       {/* Logo */}
-      <div className="flex items-center gap-3 p-4 border-b border-border">
-        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
-          <Package size={18} className="text-white" />
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '16px', borderBottom: '1px solid #E5E7EB' }}>
+        <Image
+          src="/logo.png"
+          alt="Inventrix Logo"
+          width={36}
+          height={36}
+          style={{ borderRadius: '8px', objectFit: 'cover', flexShrink: 0 }}
+        />
         {!collapsed && (
           <span className="font-bold text-lg text-foreground tracking-tight">Inventrix</span>
         )}

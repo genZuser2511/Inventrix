@@ -6,7 +6,8 @@ import { z } from 'zod';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Package, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import Image from 'next/image';
 import { useAuthStore } from '@/store/auth';
 import { apiFetch } from '@/lib/api';
 
@@ -42,9 +43,7 @@ export default function LoginPage() {
       <div style={{ width: '100%', maxWidth: '420px' }}>
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '32px' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#6C63FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Package size={20} color="white" />
-          </div>
+          <Image src="/logo.png" alt="Inventrix" width={44} height={44} style={{ borderRadius: '10px', objectFit: 'cover' }} />
           <span style={{ fontSize: '24px', fontWeight: 700, color: '#111827', letterSpacing: '-0.5px' }}>Inventrix</span>
         </div>
 
@@ -60,11 +59,7 @@ export default function LoginPage() {
                 type="email"
                 placeholder="name@company.com"
                 {...register('email')}
-                style={{
-                  width: '100%', padding: '10px 12px', border: `1px solid ${errors.email ? '#B91C1C' : '#E5E7EB'}`,
-                  borderRadius: '8px', fontSize: '14px', color: '#111827', backgroundColor: '#F9FAFB',
-                  outline: 'none', boxSizing: 'border-box'
-                }}
+                style={{ width: '100%', padding: '10px 12px', border: `1px solid ${errors.email ? '#B91C1C' : '#E5E7EB'}`, borderRadius: '8px', fontSize: '14px', color: '#111827', backgroundColor: '#F9FAFB', outline: 'none', boxSizing: 'border-box' }}
                 onFocus={(e) => e.target.style.borderColor = '#6C63FF'}
                 onBlur={(e) => e.target.style.borderColor = errors.email ? '#B91C1C' : '#E5E7EB'}
               />
@@ -72,18 +67,12 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <label style={{ fontSize: '13px', fontWeight: 600, color: '#374151' }}>Password</label>
-              </div>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '6px' }}>Password</label>
               <input
                 type="password"
                 placeholder="••••••••"
                 {...register('password')}
-                style={{
-                  width: '100%', padding: '10px 12px', border: `1px solid ${errors.password ? '#B91C1C' : '#E5E7EB'}`,
-                  borderRadius: '8px', fontSize: '14px', color: '#111827', backgroundColor: '#F9FAFB',
-                  outline: 'none', boxSizing: 'border-box'
-                }}
+                style={{ width: '100%', padding: '10px 12px', border: `1px solid ${errors.password ? '#B91C1C' : '#E5E7EB'}`, borderRadius: '8px', fontSize: '14px', color: '#111827', backgroundColor: '#F9FAFB', outline: 'none', boxSizing: 'border-box' }}
                 onFocus={(e) => e.target.style.borderColor = '#6C63FF'}
                 onBlur={(e) => e.target.style.borderColor = errors.password ? '#B91C1C' : '#E5E7EB'}
               />
@@ -93,15 +82,9 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              style={{
-                width: '100%', padding: '12px', backgroundColor: isSubmitting ? '#9CA3AF' : '#6C63FF',
-                color: 'white', border: 'none', borderRadius: '8px', fontSize: '15px',
-                fontWeight: 600, cursor: isSubmitting ? 'wait' : 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                transition: 'background-color 0.15s', marginTop: '4px'
-              }}
-              onMouseEnter={(e) => { if (!isSubmitting) (e.target as HTMLButtonElement).style.backgroundColor = '#524ACA'; }}
-              onMouseLeave={(e) => { if (!isSubmitting) (e.target as HTMLButtonElement).style.backgroundColor = '#6C63FF'; }}
+              style={{ width: '100%', padding: '12px', backgroundColor: isSubmitting ? '#9CA3AF' : '#6C63FF', color: 'white', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: 600, cursor: isSubmitting ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background-color 0.15s', marginTop: '4px' }}
+              onMouseEnter={(e) => { if (!isSubmitting) (e.currentTarget).style.backgroundColor = '#524ACA'; }}
+              onMouseLeave={(e) => { if (!isSubmitting) (e.currentTarget).style.backgroundColor = '#6C63FF'; }}
             >
               {isSubmitting && <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />}
               Sign In
@@ -110,9 +93,7 @@ export default function LoginPage() {
 
           <p style={{ marginTop: '24px', textAlign: 'center', fontSize: '14px', color: '#6B7280' }}>
             Don&apos;t have an account?{' '}
-            <Link href="/register" style={{ color: '#6C63FF', fontWeight: 600, textDecoration: 'none' }}>
-              Create one
-            </Link>
+            <Link href="/register" style={{ color: '#6C63FF', fontWeight: 600, textDecoration: 'none' }}>Create one</Link>
           </p>
         </div>
       </div>

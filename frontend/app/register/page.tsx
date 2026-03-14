@@ -6,7 +6,8 @@ import { z } from 'zod';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Package, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import Image from 'next/image';
 import { apiFetch } from '@/lib/api';
 
 const registerSchema = z.object({
@@ -44,9 +45,7 @@ export default function RegisterPage() {
       <div style={{ width: '100%', maxWidth: '420px' }}>
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '32px' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#6C63FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Package size={20} color="white" />
-          </div>
+          <Image src="/logo.png" alt="Inventrix" width={44} height={44} style={{ borderRadius: '10px', objectFit: 'cover' }} />
           <span style={{ fontSize: '24px', fontWeight: 700, color: '#111827', letterSpacing: '-0.5px' }}>Inventrix</span>
         </div>
 
@@ -58,8 +57,7 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '6px' }}>Full Name</label>
-              <input type="text" placeholder="John Doe" {...register('name')}
-                style={inputStyle(!!errors.name)}
+              <input type="text" placeholder="John Doe" {...register('name')} style={inputStyle(!!errors.name)}
                 onFocus={(e) => e.target.style.borderColor = '#6C63FF'}
                 onBlur={(e) => e.target.style.borderColor = errors.name ? '#B91C1C' : '#E5E7EB'}
               />
@@ -68,8 +66,7 @@ export default function RegisterPage() {
 
             <div>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '6px' }}>Email</label>
-              <input type="email" placeholder="name@company.com" {...register('email')}
-                style={inputStyle(!!errors.email)}
+              <input type="email" placeholder="name@company.com" {...register('email')} style={inputStyle(!!errors.email)}
                 onFocus={(e) => e.target.style.borderColor = '#6C63FF'}
                 onBlur={(e) => e.target.style.borderColor = errors.email ? '#B91C1C' : '#E5E7EB'}
               />
@@ -78,8 +75,7 @@ export default function RegisterPage() {
 
             <div>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '6px' }}>Password</label>
-              <input type="password" placeholder="••••••••" {...register('password')}
-                style={inputStyle(!!errors.password)}
+              <input type="password" placeholder="••••••••" {...register('password')} style={inputStyle(!!errors.password)}
                 onFocus={(e) => e.target.style.borderColor = '#6C63FF'}
                 onBlur={(e) => e.target.style.borderColor = errors.password ? '#B91C1C' : '#E5E7EB'}
               />
@@ -89,16 +85,9 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              style={{
-                width: '100%', padding: '12px',
-                backgroundColor: isSubmitting ? '#9CA3AF' : '#6C63FF',
-                color: 'white', border: 'none', borderRadius: '8px',
-                fontSize: '15px', fontWeight: 600, cursor: isSubmitting ? 'wait' : 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                transition: 'background-color 0.15s', marginTop: '4px'
-              }}
-              onMouseEnter={(e) => { if (!isSubmitting) (e.target as HTMLButtonElement).style.backgroundColor = '#524ACA'; }}
-              onMouseLeave={(e) => { if (!isSubmitting) (e.target as HTMLButtonElement).style.backgroundColor = '#6C63FF'; }}
+              style={{ width: '100%', padding: '12px', backgroundColor: isSubmitting ? '#9CA3AF' : '#6C63FF', color: 'white', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: 600, cursor: isSubmitting ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background-color 0.15s', marginTop: '4px' }}
+              onMouseEnter={(e) => { if (!isSubmitting) (e.currentTarget).style.backgroundColor = '#524ACA'; }}
+              onMouseLeave={(e) => { if (!isSubmitting) (e.currentTarget).style.backgroundColor = '#6C63FF'; }}
             >
               {isSubmitting && <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />}
               Create Account
@@ -107,9 +96,7 @@ export default function RegisterPage() {
 
           <p style={{ marginTop: '24px', textAlign: 'center', fontSize: '14px', color: '#6B7280' }}>
             Already have an account?{' '}
-            <Link href="/login" style={{ color: '#6C63FF', fontWeight: 600, textDecoration: 'none' }}>
-              Sign in
-            </Link>
+            <Link href="/login" style={{ color: '#6C63FF', fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
           </p>
         </div>
       </div>
