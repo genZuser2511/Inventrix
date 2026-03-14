@@ -62,13 +62,34 @@ app.post('/api/auth/login', async (req, res) => {
 // ───── Stats ────────────────────────────────────
 app.get('/api/stats', auth, async (req, res) => {
   try {
-    const totalProducts = await prisma.product.count();
+    const products = await prisma.product.findMany();
+    const stockLevels = await prisma.stockLevel.findMany();
     const pendingReceipts = await prisma.receipt.count({ where: { status: 'DRAFT' } });
-    const lowStockLevels = await prisma.stockLevel.findMany({ include: { product: true } });
-    const lowStock = lowStockLevels.filter(sl => sl.product.reorderPoint > 0 && sl.quantity <= sl.product.reorderPoint).length;
-    const outOfStock = await prisma.stockLevel.count({ where: { quantity: 0 } });
-    res.json({ totalProducts, pendingReceipts, lowStock, outOfStock });
-  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+
+    // Map product ID to total quantity across all warehouses
+    const stockMap: Record<string, number> = {};
+    stockLevels.forEach(sl => {
+      stockMap[sl.productId] = (stockMap[sl.productId] || 0) + sl.quantity;
+    });
+
+    let lowStock = 0;
+    let outOfStock = 0;
+
+    products.forEach(p => {
+      const total = stockMap[p.id] || 0;
+      if (p.reorderPoint > 0 && total <= p.reorderPoint) {
+        lowStock++;
+      }
+      if (total === 0) {
+        outOfStock++;
+      }
+    });
+
+    res.json({ totalProducts: products.length, pendingReceipts, lowStock, outOfStock });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 // ───── Products ─────────────────────────────────
