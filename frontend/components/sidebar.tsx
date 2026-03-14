@@ -7,9 +7,9 @@ import { useAuthStore } from '@/store/auth';
 import Image from 'next/image';
 import {
   LayoutDashboard, Package, Warehouse, ArrowDownToLine,
-  Truck, ArrowLeftRight, Sliders, BookOpen, LogOut, Menu, X
+  Truck, ArrowLeftRight, Sliders, BookOpen, LogOut, Menu, X, Moon, Sun
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
 const navItems = [
@@ -29,6 +29,22 @@ export function Sidebar() {
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
   const [collapsed, setCollapsed] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    setIsDark(document.documentElement.classList.contains('dark'));
+  }, []);
+
+  const toggleTheme = () => {
+    const root = document.documentElement;
+    if (isDark) {
+      root.classList.remove('dark');
+      setIsDark(false);
+    } else {
+      root.classList.add('dark');
+      setIsDark(true);
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -37,13 +53,13 @@ export function Sidebar() {
 
   return (
     <aside className={cn(
-      'flex flex-col h-full border-r transition-all duration-300',
+      'flex flex-col h-full transition-all duration-300',
       collapsed ? 'w-16' : 'w-56'
-    )} style={{ backgroundColor: '#F9FAFB', borderColor: '#E5E7EB' }}>
+    )} style={{ backgroundColor: 'var(--surface)', borderRight: '1px solid var(--border)' }}>
       {/* Logo */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '16px', borderBottom: '1px solid #E5E7EB' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '16px', borderBottom: '1px solid var(--border)' }}>
         <Image
-          src="/logo.png"
+          src="/image2121.png"
           alt="Inventrix Logo"
           width={36}
           height={36}
@@ -90,15 +106,26 @@ export function Sidebar() {
             <p className="text-xs text-muted truncate">{user?.email}</p>
           </div>
         )}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleLogout}
-          className="w-full justify-start gap-3 text-muted hover:text-danger"
-        >
-          <LogOut size={16} />
-          {!collapsed && 'Logout'}
-        </Button>
+        <div className={cn("flex gap-1", collapsed ? "flex-col" : "flex-row")}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleTheme}
+            className={cn("justify-start text-muted hover:text-foreground", !collapsed && "flex-1 justify-center")}
+            title="Toggle theme"
+          >
+            {isDark ? <Sun size={16} /> : <Moon size={16} />}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLogout}
+            className={cn("justify-start text-muted hover:text-danger", !collapsed && "flex-1 justify-center")}
+            title="Logout"
+          >
+            <LogOut size={16} />
+          </Button>
+        </div>
       </div>
     </aside>
   );

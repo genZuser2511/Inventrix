@@ -45,8 +45,8 @@ export default function RegisterPage() {
       <div style={{ width: '100%', maxWidth: '420px' }}>
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '32px' }}>
-          <Image src="/logo.png" alt="Inventrix" width={44} height={44} style={{ borderRadius: '10px', objectFit: 'cover' }} />
-          <span style={{ fontSize: '24px', fontWeight: 700, color: '#111827', letterSpacing: '-0.5px' }}>Inventrix</span>
+          <Image src="/image2121.png" alt="Inventrix" width={44} height={44} style={{ borderRadius: '10px', objectFit: 'cover' }} />
+          <span style={{ fontSize: '24px', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.5px' }}>Inventrix</span>
         </div>
 
         {/* Card */}
