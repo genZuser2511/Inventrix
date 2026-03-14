@@ -33,8 +33,8 @@ interface Product {
 const productSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   sku: z.string().min(1, 'SKU is required'),
-  unitOfMeasure: z.string().default('units'),
-  reorderPoint: z.coerce.number().min(0).default(0),
+  unitOfMeasure: z.string().min(1, 'Unit is required'),
+  reorderPoint: z.coerce.number().min(0),
 });
 type ProductForm = z.infer<typeof productSchema>;
 
@@ -50,8 +50,14 @@ export default function ProductsPage() {
     queryFn: () => apiFetch('/products', {}, token),
   });
 
+  const { data: stock = [] } = useQuery<any[]>({
+    queryKey: ['stock'],
+    queryFn: () => apiFetch('/stock', {}, token),
+  });
+
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<ProductForm>({
     resolver: zodResolver(productSchema),
+    defaultValues: { name: '', sku: '', unitOfMeasure: 'units', reorderPoint: 0 }
   });
 
   const createMutation = useMutation({
@@ -122,6 +128,7 @@ export default function ProductsPage() {
                   <TableHead className="text-muted">Name</TableHead>
                   <TableHead className="text-muted">SKU</TableHead>
                   <TableHead className="text-muted">Unit</TableHead>
+                  <TableHead className="text-muted">Total Stock</TableHead>
                   <TableHead className="text-muted">Reorder Point</TableHead>
                   <TableHead className="text-muted w-24">Actions</TableHead>
                 </TableRow>
@@ -129,7 +136,7 @@ export default function ProductsPage() {
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center text-muted py-12">
+                    <TableCell colSpan={6} className="text-center text-muted py-12">
                       No products found. Add your first product!
                     </TableCell>
                   </TableRow>
@@ -141,6 +148,11 @@ export default function ProductsPage() {
                         <Badge variant="outline" className="font-mono text-xs">{p.sku}</Badge>
                       </TableCell>
                       <TableCell className="text-muted">{p.unitOfMeasure}</TableCell>
+                      <TableCell>
+                        <span className="font-semibold text-foreground">
+                          {stock.filter((s: any) => s.productId === p.id).reduce((acc: number, curr: any) => acc + curr.quantity, 0)}
+                        </span>
+                      </TableCell>
                       <TableCell>
                         <span className={p.reorderPoint > 0 ? 'text-warning font-semibold' : 'text-muted'}>
                           {p.reorderPoint}
