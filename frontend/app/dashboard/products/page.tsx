@@ -34,8 +34,8 @@ const productSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   sku: z.string().min(1, 'SKU is required'),
   unitOfMeasure: z.string().min(1, 'Unit is required'),
-  reorderPoint: z.coerce.number().min(0),
-  totalStock: z.coerce.number().min(0).optional(),
+  reorderPoint: z.number().min(0),
+  totalStock: z.number().min(0).optional(),
 });
 type ProductForm = z.infer<typeof productSchema>;
 
@@ -57,7 +57,7 @@ export default function ProductsPage() {
   });
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<ProductForm>({
-    resolver: zodResolver(productSchema),
+    resolver: zodResolver(productSchema) as any,
     defaultValues: { name: '', sku: '', unitOfMeasure: 'units', reorderPoint: 0, totalStock: 0 }
   });
 
@@ -95,7 +95,13 @@ export default function ProductsPage() {
   const openEdit = (p: Product) => { 
     const currentStock = stock.filter((s: any) => s.productId === p.id).reduce((acc: number, curr: any) => acc + curr.quantity, 0);
     setEditing(p); 
-    reset({ ...p, totalStock: currentStock }); 
+    reset({ 
+      name: p.name, 
+      sku: p.sku, 
+      unitOfMeasure: p.unitOfMeasure, 
+      reorderPoint: p.reorderPoint, 
+      totalStock: currentStock 
+    }); 
     setOpen(true); 
   };
   const onSubmit = (data: ProductForm) => editing ? updateMutation.mutate(data) : createMutation.mutate(data);
@@ -219,12 +225,14 @@ export default function ProductsPage() {
               </div>
               <div className="space-y-2">
                 <Label>Reorder Point</Label>
-                <Input type="number" placeholder="0" {...register('reorderPoint')} />
+                <Input type="number" placeholder="0" {...register('reorderPoint', { valueAsNumber: true })} />
+                {errors.reorderPoint && <p className="text-xs text-danger">{errors.reorderPoint.message}</p>}
               </div>
             </div>
             <div className="space-y-2">
               <Label>Total Stock <span className="text-muted font-normal text-xs ml-1">(Quick Adjust)</span></Label>
-              <Input type="number" placeholder="0" {...register('totalStock')} />
+              <Input type="number" placeholder="0" {...register('totalStock', { valueAsNumber: true })} />
+              {errors.totalStock && <p className="text-xs text-danger">{errors.totalStock.message}</p>}
             </div>
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>

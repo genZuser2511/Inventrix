@@ -36,7 +36,7 @@ export default function WarehousesPage() {
   });
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<WForm>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as any,
   });
 
   const createM = useMutation({
