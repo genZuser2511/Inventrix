@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id               String   @id @default(uuid())
+  name             String
+  sku              String   @unique
+  categoryId       String?
+  unitOfMeasure    String   @default("units")
+  reorderPoint     Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  stockLevels      StockLevel[]
+  receiptLines     ReceiptLine[]
+  deliveryLines    DeliveryLine[]
+  transferLines    TransferLine[]
+  adjustments      Adjustment[]
+  stockLedger      StockLedger[]
+}
+
+model Warehouse {
+  id           String   @id @default(uuid())
+  name         String
+  location     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  stockLevels  StockLevel[]
+  adjustments  Adjustment[]
+  stockLedger  StockLedger[]
+
+  transfersFrom Transfer[] @relation("TransfersFrom")
+  transfersTo   Transfer[] @relation("TransfersTo")
+}
+
+model StockLevel {
+  id           String     @id @default(uuid())
+  productId    String
+  warehouseId  String
+  quantity     Int        @default(0)
+  updatedAt    DateTime   @updatedAt
+
+  product      Product    @relation(fields: [productId], references: [id])
+  warehouse    Warehouse  @relation(fields: [warehouseId], references: [id])
+
+  @@unique([productId, warehouseId])
+}
+
+model Receipt {
+  id           String        @id @default(uuid())
+  supplier     String?
+  status       String        @default("DRAFT") // DRAFT, DONE, CANCELED
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  
+  lines        ReceiptLine[]
+}
+
+model ReceiptLine {
+  id           String   @id @default(uuid())
+  receiptId    String
+  productId    String
+  quantity     Int
+
+  receipt      Receipt  @relation(fields: [receiptId], references: [id])
+  product      Product  @relation(fields: [productId], references: [id])
+}
+
+model DeliveryOrder {
+  id           String         @id @default(uuid())
+  customer     String?
+  status       String         @default("DRAFT") // DRAFT, DONE, CANCELED
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  lines        DeliveryLine[]
+}
+
+model DeliveryLine {
+  id           String        @id @default(uuid())
+  deliveryId   String
+  productId    String
+  quantity     Int
+
+  delivery     DeliveryOrder @relation(fields: [deliveryId], references: [id])
+  product      Product       @relation(fields: [productId], references: [id])
+}
+
+model Transfer {
+  id               String     @id @default(uuid())
+  fromWarehouseId  String
+  toWarehouseId    String
+  status           String     @default("DRAFT") // DRAFT, IN_TRANSIT, DONE, CANCELED
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  fromWarehouse    Warehouse  @relation("TransfersFrom", fields: [fromWarehouseId], references: [id])
+  toWarehouse      Warehouse  @relation("TransfersTo", fields: [toWarehouseId], references: [id])
+  
+  lines            TransferLine[]
+}
+
+model TransferLine {
+  id           String   @id @default(uuid())
+  transferId   String
+  productId    String
+  quantity     Int
+
+  transfer     Transfer @relation(fields: [transferId], references: [id])
+  product      Product  @relation(fields: [productId], references: [id])
+}
+
+model Adjustment {
+  id           String    @id @default(uuid())
+  productId    String
+  warehouseId  String
+  oldQty       Int
+  newQty       Int
+  reason       String?
+  createdAt    DateTime  @default(now())
+
+  product      Product   @relation(fields: [productId], references: [id])
+  warehouse    Warehouse @relation(fields: [warehouseId], references: [id])
+}
+
+model StockLedger {
+  id           String    @id @default(uuid())
+  productId    String
+  warehouseId  String
+  change       Int
+  type         String    // RECEIPT, DELIVERY, TRANSFER, ADJUSTMENT
+  refId        String?   // ID of the receipt/delivery/transfer/adjustment
+  timestamp    DateTime  @default(now())
+
+  product      Product   @relation(fields: [productId], references: [id])
+  warehouse    Warehouse @relation(fields: [warehouseId], references: [id])
+}

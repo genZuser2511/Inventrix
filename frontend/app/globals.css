@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #FFFFFF;
+    --surface: #F9FAFB;
+    --elevated-surface: #F3F4F6;
+    --foreground: #111827;
+    
+    --card: #FFFFFF;
+    --card-foreground: #111827;
+    
+    --popover: #FFFFFF;
+    --popover-foreground: #111827;
+    
+    --primary: #6C63FF;
+    --primary-foreground: #FFFFFF;
+    --primary-pressed: #524ACA;
+    --primary-subtle: #EEEDFE;
+    
+    --secondary: #374151;
+    --secondary-foreground: #F9FAFB;
+    
+    --muted: #6B7280;
+    --muted-foreground: #F9FAFB;
+    
+    --accent: #6C63FF;
+    --accent-foreground: #FFFFFF;
+    
+    --destructive: #B91C1C;
+    --destructive-foreground: #FEF2F2;
+
+    --border: #E5E7EB;
+    --input: #E5E7EB;
+    --ring: #6C63FF;
+    
+    --radius: 0.5rem;
+
+    --success: #15803D;
+    --success-foreground: #F0FDF4;
+    --success-subtle: #F0FDF4;
+    
+    --warning: #B45309;
+    --warning-foreground: #FFFBEB;
+    --warning-subtle: #FFFBEB;
+    
+    --danger: #B91C1C;
+    --danger-foreground: #FEF2F2;
+    --danger-subtle: #FEF2F2;
+    
+    --info: #1D4ED8;
+    --info-foreground: #EFF6FF;
+    --info-subtle: #EFF6FF;
+  }
+ 
+  .dark {
+    --background: #0F1117;
+    --surface: #16181F;
+    --elevated-surface: #1E2029;
+    --foreground: #F0F0F5;
+    
+    --card: #16181F;
+    --card-foreground: #F0F0F5;
+    
+    --popover: #0F1117;
+    --popover-foreground: #F0F0F5;
+    
+    --primary: #6C63FF;
+    --primary-foreground: #FFFFFF;
+    --primary-pressed: #524ACA;
+    --primary-subtle: #1E2029;
+    
+    --secondary: #9A9BAE;
+    --secondary-foreground: #0F1117;
+    
+    --muted: #5A5B70;
+    --muted-foreground: #F0F0F5;
+    
+    --accent: #6C63FF;
+    --accent-foreground: #FFFFFF;
+    
+    --destructive: #F87171;
+    --destructive-foreground: #2E0D0D;
+
+    --border: #2E3345;
+    --input: #2E3345;
+    --ring: #6C63FF;
+
+    --success: #4ADE80;
+    --success-foreground: #0D2E1A;
+    --success-subtle: #0D2E1A;
+    
+    --warning: #FBBF24;
+    --warning-foreground: #2E1F05;
+    --warning-subtle: #2E1F05;
+    
+    --danger: #F87171;
+    --danger-foreground: #2E0D0D;
+    --danger-subtle: #2E0D0D;
+    
+    --info: #60A5FA;
+    --info-foreground: #0D1E30;
+    --info-subtle: #0D1E30;
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

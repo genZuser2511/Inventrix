@@ -1,24 +1,20 @@
 # Dependencies
 node_modules/
-client/node_modules/
-server/node_modules/
-
-# Environment files
-.env
-.env.local
-client/.env
-client/.env.local
-server/.env
-server/.env.local
 
 # Build outputs
 .next/
 dist/
-build/
 
-# Prisma
-*.db
+# Environment files (contain secrets — use .env.example instead)
+.env
+.env.local
 
-# OS files
+# Database files (generated at runtime)
+prisma/dev.db
+prisma/dev.db-journal
+
+# OS / Editor noise
 .DS_Store
 Thumbs.db
+*.log
+tsconfig.tsbuildinfo
