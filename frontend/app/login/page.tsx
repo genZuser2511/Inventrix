@@ -7,10 +7,6 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Package, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuthStore } from '@/store/auth';
 import { apiFetch } from '@/lib/api';
 
@@ -42,68 +38,85 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md">
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F9FAFB', padding: '1rem' }}>
+      <div style={{ width: '100%', maxWidth: '420px' }}>
         {/* Logo */}
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-            <Package size={20} className="text-white" />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '32px' }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#6C63FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Package size={20} color="white" />
           </div>
-          <span className="text-2xl font-bold text-foreground tracking-tight">Inventrix</span>
+          <span style={{ fontSize: '24px', fontWeight: 700, color: '#111827', letterSpacing: '-0.5px' }}>Inventrix</span>
         </div>
 
-        <Card className="border-border bg-surface shadow-xl">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
-            <CardDescription className="text-muted">
-              Enter your credentials to access your account
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="name@company.com"
-                  {...register('email')}
-                  className={errors.email ? 'border-danger' : ''}
-                />
-                {errors.email && (
-                  <p className="text-xs text-danger">{errors.email.message}</p>
-                )}
+        {/* Card */}
+        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '12px', padding: '32px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+          <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#111827', margin: '0 0 4px 0' }}>Sign In</h1>
+          <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 24px 0' }}>Enter your credentials to access your account</p>
+
+          <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '6px' }}>Email</label>
+              <input
+                type="email"
+                placeholder="name@company.com"
+                {...register('email')}
+                style={{
+                  width: '100%', padding: '10px 12px', border: `1px solid ${errors.email ? '#B91C1C' : '#E5E7EB'}`,
+                  borderRadius: '8px', fontSize: '14px', color: '#111827', backgroundColor: '#F9FAFB',
+                  outline: 'none', boxSizing: 'border-box'
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#6C63FF'}
+                onBlur={(e) => e.target.style.borderColor = errors.email ? '#B91C1C' : '#E5E7EB'}
+              />
+              {errors.email && <p style={{ color: '#B91C1C', fontSize: '12px', marginTop: '4px' }}>{errors.email.message}</p>}
+            </div>
+
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <label style={{ fontSize: '13px', fontWeight: 600, color: '#374151' }}>Password</label>
               </div>
+              <input
+                type="password"
+                placeholder="••••••••"
+                {...register('password')}
+                style={{
+                  width: '100%', padding: '10px 12px', border: `1px solid ${errors.password ? '#B91C1C' : '#E5E7EB'}`,
+                  borderRadius: '8px', fontSize: '14px', color: '#111827', backgroundColor: '#F9FAFB',
+                  outline: 'none', boxSizing: 'border-box'
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#6C63FF'}
+                onBlur={(e) => e.target.style.borderColor = errors.password ? '#B91C1C' : '#E5E7EB'}
+              />
+              {errors.password && <p style={{ color: '#B91C1C', fontSize: '12px', marginTop: '4px' }}>{errors.password.message}</p>}
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  {...register('password')}
-                  className={errors.password ? 'border-danger' : ''}
-                />
-                {errors.password && (
-                  <p className="text-xs text-danger">{errors.password.message}</p>
-                )}
-              </div>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              style={{
+                width: '100%', padding: '12px', backgroundColor: isSubmitting ? '#9CA3AF' : '#6C63FF',
+                color: 'white', border: 'none', borderRadius: '8px', fontSize: '15px',
+                fontWeight: 600, cursor: isSubmitting ? 'wait' : 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                transition: 'background-color 0.15s', marginTop: '4px'
+              }}
+              onMouseEnter={(e) => { if (!isSubmitting) (e.target as HTMLButtonElement).style.backgroundColor = '#524ACA'; }}
+              onMouseLeave={(e) => { if (!isSubmitting) (e.target as HTMLButtonElement).style.backgroundColor = '#6C63FF'; }}
+            >
+              {isSubmitting && <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />}
+              Sign In
+            </button>
+          </form>
 
-              <Button type="submit" className="w-full bg-primary hover:bg-primary-pressed text-white" disabled={isSubmitting}>
-                {isSubmitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                Sign In
-              </Button>
-            </form>
-
-            <p className="mt-6 text-center text-sm text-muted">
-              Don't have an account?{' '}
-              <Link href="/register" className="text-primary font-semibold hover:underline">
-                Create one
-              </Link>
-            </p>
-          </CardContent>
-        </Card>
+          <p style={{ marginTop: '24px', textAlign: 'center', fontSize: '14px', color: '#6B7280' }}>
+            Don&apos;t have an account?{' '}
+            <Link href="/register" style={{ color: '#6C63FF', fontWeight: 600, textDecoration: 'none' }}>
+              Create one
+            </Link>
+          </p>
+        </div>
       </div>
+      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

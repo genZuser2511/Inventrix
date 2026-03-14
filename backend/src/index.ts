@@ -217,6 +217,35 @@ app.post('/api/deliveries', auth, async (req, res) => {
   } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
+// ───── Transfers ────────────────────────────────
+app.get('/api/transfers', auth, async (req, res) => {
+  const transfers = await prisma.transfer.findMany({
+    include: {
+      fromWarehouse: true,
+      toWarehouse: true,
+      lines: { include: { product: true } }
+    },
+    orderBy: { createdAt: 'desc' }
+  });
+  res.json(transfers);
+});
+
+app.post('/api/transfers', auth, async (req, res) => {
+  try {
+    const { fromWarehouseId, toWarehouseId, lines } = req.body;
+    if (!fromWarehouseId || !toWarehouseId) return res.status(400).json({ error: 'Both warehouses required' });
+    const transfer = await prisma.transfer.create({
+      data: {
+        fromWarehouseId,
+        toWarehouseId,
+        lines: { create: lines?.map((l: any) => ({ productId: l.productId, quantity: l.quantity })) || [] }
+      },
+      include: { lines: true, fromWarehouse: true, toWarehouse: true }
+    });
+    res.json(transfer);
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+});
+
 // ───── Stock Levels ─────────────────────────────
 app.get('/api/stock', auth, async (req, res) => {
   const stock = await prisma.stockLevel.findMany({
