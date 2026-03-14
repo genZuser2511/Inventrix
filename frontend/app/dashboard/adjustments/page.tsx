@@ -28,7 +28,10 @@ export default function AdjustmentsPage() {
 
   const createM = useMutation({
     mutationFn: (d: any) => apiFetch('/adjustments', { method: 'POST', body: JSON.stringify(d) }, token),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['adjustments', 'stock', 'stats', 'ledger'] }); toast.success('Adjustment applied'); setOpen(false); setForm({ productId: '', warehouseId: '', adjQty: '', reason: '' }); },
+    onSuccess: () => { 
+      ['adjustments', 'stock', 'stats', 'ledger'].forEach(k => qc.invalidateQueries({ queryKey: [k] }));
+      toast.success('Adjustment applied'); setOpen(false); setForm({ productId: '', warehouseId: '', adjQty: '', reason: '' }); 
+    },
     onError: (e: any) => toast.error(e.message),
   });
 

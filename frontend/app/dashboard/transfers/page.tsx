@@ -40,7 +40,10 @@ export default function TransfersPage() {
 
   const confirmM = useMutation({
     mutationFn: (id: string) => apiFetch(`/transfers/${id}/confirm`, { method: 'PUT' }, token),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['transfers', 'stock', 'stats', 'ledger'] }); toast.success('Transfer confirmed and received'); },
+    onSuccess: () => { 
+      ['transfers', 'stock', 'stats', 'ledger'].forEach(k => qc.invalidateQueries({ queryKey: [k] }));
+      toast.success('Transfer confirmed and received'); 
+    },
     onError: (e: any) => toast.error(e.message),
   });
 
