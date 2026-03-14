@@ -131,10 +131,11 @@ export default function DashboardPage() {
                 <XAxis dataKey="month" tick={{ fill: 'var(--muted)', fontSize: 12 }} />
                 <YAxis tick={{ fill: 'var(--muted)', fontSize: 12 }} />
                 <Tooltip
-                  contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8 }}
+                  contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--foreground)' }}
+                  itemStyle={{ color: 'var(--foreground)' }}
                 />
-                <Bar dataKey="receipts" fill="#6C63FF" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="deliveries" fill="#9A9BAE" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="receipts" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="deliveries" fill="var(--secondary-text)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
