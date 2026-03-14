@@ -40,7 +40,7 @@ export default function ReceiptsPage() {
 
   const confirmM = useMutation({
     mutationFn: (id: string) => apiFetch(`/receipts/${id}/confirm`, { method: 'PUT' }, token),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['receipts', 'stock', 'stats'] }); toast.success('Receipt confirmed — stock updated'); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['receipts', 'stock', 'stats', 'ledger'] }); toast.success('Receipt confirmed — stock updated'); },
     onError: (e: any) => toast.error(e.message),
   });
 

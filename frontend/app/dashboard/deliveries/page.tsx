@@ -40,7 +40,7 @@ export default function DeliveriesPage() {
 
   const confirmM = useMutation({
     mutationFn: (id: string) => apiFetch(`/deliveries/${id}/confirm`, { method: 'PUT' }, token),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['deliveries', 'stock', 'stats'] }); toast.success('Delivery confirmed and shipped'); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['deliveries', 'stock', 'stats', 'ledger'] }); toast.success('Delivery confirmed and shipped'); },
     onError: (e: any) => toast.error(e.message),
   });
 

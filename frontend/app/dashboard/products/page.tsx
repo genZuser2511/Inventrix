@@ -64,21 +64,21 @@ export default function ProductsPage() {
   const createMutation = useMutation({
     mutationFn: (data: ProductForm) =>
       apiFetch('/products', { method: 'POST', body: JSON.stringify(data) }, token),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['products', 'stock', 'stats'] }); toast.success('Product created'); setOpen(false); reset(); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['products', 'stock', 'stats', 'ledger'] }); toast.success('Product created'); setOpen(false); reset(); },
     onError: (e: any) => toast.error(e.message),
   });
 
   const updateMutation = useMutation({
     mutationFn: (data: ProductForm) =>
       apiFetch(`/products/${editing!.id}`, { method: 'PUT', body: JSON.stringify(data) }, token),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['products', 'stock', 'stats'] }); toast.success('Product updated'); setOpen(false); setEditing(null); reset(); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['products', 'stock', 'stats', 'ledger'] }); toast.success('Product updated'); setOpen(false); setEditing(null); reset(); },
     onError: (e: any) => toast.error(e.message),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) =>
       apiFetch(`/products/${id}`, { method: 'DELETE' }, token),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['products', 'stock', 'stats'] }); toast.success('Product deleted'); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['products', 'stock', 'stats', 'ledger'] }); toast.success('Product deleted'); },
     onError: (e: any) => toast.error(e.message),
   });
 
