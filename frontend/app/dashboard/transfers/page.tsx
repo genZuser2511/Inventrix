@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Plus, Loader2 } from 'lucide-react';
+import { Plus, Loader2, CheckCircle } from 'lucide-react';
 import { useAuthStore } from '@/store/auth';
 import { apiFetch } from '@/lib/api';
 
@@ -38,6 +38,12 @@ export default function TransfersPage() {
     onError: (e: any) => toast.error(e.message),
   });
 
+  const confirmM = useMutation({
+    mutationFn: (id: string) => apiFetch(`/transfers/${id}/confirm`, { method: 'PUT' }, token),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['transfers', 'stock', 'stats'] }); toast.success('Transfer confirmed and received'); },
+    onError: (e: any) => toast.error(e.message),
+  });
+
   const addLine = () => setLines([...lines, { productId: '', quantity: 1 }]);
   const updateLine = (i: number, field: string, val: any) => {
     const next = [...lines]; next[i] = { ...next[i], [field]: val }; setLines(next);
@@ -68,9 +74,9 @@ export default function TransfersPage() {
       <div style={S.card}>
         {isLoading ? <div style={{ padding: '48px', textAlign: 'center' }}><Loader2 size={24} style={{ animation: 'spin 1s linear infinite' }} /></div> : (
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead><tr><th style={S.th}>From</th><th style={S.th}>To</th><th style={S.th}>Lines</th><th style={S.th}>Status</th><th style={S.th}>Date</th></tr></thead>
+            <thead><tr><th style={S.th}>From</th><th style={S.th}>To</th><th style={S.th}>Lines</th><th style={S.th}>Status</th><th style={S.th}>Date</th><th style={S.th}>Actions</th></tr></thead>
             <tbody>
-              {transfers.length === 0 && <tr><td colSpan={5} style={{ ...S.td, textAlign: 'center', color: '#9CA3AF', padding: '48px' }}>No transfers yet.</td></tr>}
+              {transfers.length === 0 && <tr><td colSpan={6} style={{ ...S.td, textAlign: 'center', color: '#9CA3AF', padding: '48px' }}>No transfers yet.</td></tr>}
               {transfers.map((t) => (
                 <>
                   <tr key={t.id} onClick={() => setExpanded(expanded === t.id ? null : t.id)} style={{ cursor: 'pointer' }}>
@@ -79,9 +85,17 @@ export default function TransfersPage() {
                     <td style={S.td}>{t.lines.length} item(s)</td>
                     <td style={S.td}><span style={{ ...statusColor[t.status], padding: '2px 10px', borderRadius: '999px', fontSize: '12px', fontWeight: 600 }}>{t.status}</span></td>
                     <td style={{ ...S.td, color: 'var(--muted)' }}>{new Date(t.createdAt).toLocaleDateString()}</td>
+                    <td style={S.td}>
+                      {t.status === 'DRAFT' && (
+                        <button onClick={(e) => { e.stopPropagation(); confirmM.mutate(t.id); }} disabled={confirmM.isPending}
+                          style={{ display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: '#F0FDF4', color: '#15803D', border: '1px solid #bbf7d0', borderRadius: '6px', padding: '4px 10px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>
+                          <CheckCircle size={13} /> Confirm
+                        </button>
+                      )}
+                    </td>
                   </tr>
                   {expanded === t.id && (
-                    <tr key={`${t.id}-exp`}><td colSpan={5} style={{ padding: 0, background: 'var(--surface)' }}>
+                    <tr key={`${t.id}-exp`}><td colSpan={6} style={{ padding: 0, background: 'var(--surface)' }}>
                       <div style={{ padding: '12px 24px' }}>
                         {t.lines.map((l, i) => <div key={i} style={{ fontSize: '13px', color: 'var(--foreground)' }}>• {l.product.name} — <b>{l.quantity}</b> units</div>)}
                       </div>

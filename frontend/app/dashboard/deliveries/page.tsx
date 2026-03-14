@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { Plus, Loader2 } from 'lucide-react';
+import { Plus, Loader2, CheckCircle } from 'lucide-react';
 import { useAuthStore } from '@/store/auth';
 import { apiFetch } from '@/lib/api';
 
@@ -38,6 +38,12 @@ export default function DeliveriesPage() {
     onError: (e: any) => toast.error(e.message),
   });
 
+  const confirmM = useMutation({
+    mutationFn: (id: string) => apiFetch(`/deliveries/${id}/confirm`, { method: 'PUT' }, token),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['deliveries', 'stock', 'stats'] }); toast.success('Delivery confirmed and shipped'); },
+    onError: (e: any) => toast.error(e.message),
+  });
+
   const addLine = () => setLines([...lines, { productId: '', quantity: 1 }]);
   const updateLine = (i: number, field: string, val: any) => {
     const next = [...lines]; next[i] = { ...next[i], [field]: val }; setLines(next);
@@ -64,9 +70,9 @@ export default function DeliveriesPage() {
       <div style={S.card}>
         {isLoading ? <div style={{ padding: '48px', textAlign: 'center' }}><Loader2 size={24} style={{ animation: 'spin 1s linear infinite' }} /></div> : (
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead><tr><th style={S.th}>Customer</th><th style={S.th}>Lines</th><th style={S.th}>Status</th><th style={S.th}>Date</th></tr></thead>
+            <thead><tr><th style={S.th}>Customer</th><th style={S.th}>Lines</th><th style={S.th}>Status</th><th style={S.th}>Date</th><th style={S.th}>Actions</th></tr></thead>
             <tbody>
-              {deliveries.length === 0 && <tr><td colSpan={4} style={{ ...S.td, textAlign: 'center', color: '#9CA3AF', padding: '48px' }}>No deliveries yet.</td></tr>}
+              {deliveries.length === 0 && <tr><td colSpan={5} style={{ ...S.td, textAlign: 'center', color: '#9CA3AF', padding: '48px' }}>No deliveries yet.</td></tr>}
               {deliveries.map((d) => (
                 <>
                   <tr key={d.id} onClick={() => setExpanded(expanded === d.id ? null : d.id)} style={{ cursor: 'pointer' }}>
@@ -74,9 +80,17 @@ export default function DeliveriesPage() {
                     <td style={S.td}>{d.lines.length} item(s)</td>
                     <td style={S.td}><span style={{ ...statusColor[d.status], padding: '2px 10px', borderRadius: '999px', fontSize: '12px', fontWeight: 600 }}>{d.status}</span></td>
                     <td style={{ ...S.td, color: 'var(--muted)' }}>{new Date(d.createdAt).toLocaleDateString()}</td>
+                    <td style={S.td}>
+                      {d.status === 'DRAFT' && (
+                        <button onClick={(e) => { e.stopPropagation(); confirmM.mutate(d.id); }} disabled={confirmM.isPending}
+                          style={{ display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: '#F0FDF4', color: '#15803D', border: '1px solid #bbf7d0', borderRadius: '6px', padding: '4px 10px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>
+                          <CheckCircle size={13} /> Confirm
+                        </button>
+                      )}
+                    </td>
                   </tr>
                   {expanded === d.id && (
-                    <tr key={`${d.id}-exp`}><td colSpan={4} style={{ padding: 0, background: 'var(--surface)' }}>
+                    <tr key={`${d.id}-exp`}><td colSpan={5} style={{ padding: 0, background: 'var(--surface)' }}>
                       <div style={{ padding: '12px 24px' }}>
                         {d.lines.map((l, i) => <div key={i} style={{ fontSize: '13px', color: 'var(--foreground)' }}>• {l.product.name} — <b>{l.quantity}</b> units</div>)}
                       </div>

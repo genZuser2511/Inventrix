@@ -35,6 +35,7 @@ const productSchema = z.object({
   sku: z.string().min(1, 'SKU is required'),
   unitOfMeasure: z.string().min(1, 'Unit is required'),
   reorderPoint: z.coerce.number().min(0),
+  totalStock: z.coerce.number().min(0).optional(),
 });
 type ProductForm = z.infer<typeof productSchema>;
 
@@ -57,32 +58,37 @@ export default function ProductsPage() {
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<ProductForm>({
     resolver: zodResolver(productSchema),
-    defaultValues: { name: '', sku: '', unitOfMeasure: 'units', reorderPoint: 0 }
+    defaultValues: { name: '', sku: '', unitOfMeasure: 'units', reorderPoint: 0, totalStock: 0 }
   });
 
   const createMutation = useMutation({
     mutationFn: (data: ProductForm) =>
       apiFetch('/products', { method: 'POST', body: JSON.stringify(data) }, token),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['products'] }); toast.success('Product created'); setOpen(false); reset(); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['products', 'stock', 'stats'] }); toast.success('Product created'); setOpen(false); reset(); },
     onError: (e: any) => toast.error(e.message),
   });
 
   const updateMutation = useMutation({
     mutationFn: (data: ProductForm) =>
       apiFetch(`/products/${editing!.id}`, { method: 'PUT', body: JSON.stringify(data) }, token),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['products'] }); toast.success('Product updated'); setOpen(false); setEditing(null); reset(); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['products', 'stock', 'stats'] }); toast.success('Product updated'); setOpen(false); setEditing(null); reset(); },
     onError: (e: any) => toast.error(e.message),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) =>
       apiFetch(`/products/${id}`, { method: 'DELETE' }, token),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['products'] }); toast.success('Product deleted'); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['products', 'stock', 'stats'] }); toast.success('Product deleted'); },
     onError: (e: any) => toast.error(e.message),
   });
 
-  const openCreate = () => { setEditing(null); reset({ name: '', sku: '', unitOfMeasure: 'units', reorderPoint: 0 }); setOpen(true); };
-  const openEdit = (p: Product) => { setEditing(p); reset(p); setOpen(true); };
+  const openCreate = () => { setEditing(null); reset({ name: '', sku: '', unitOfMeasure: 'units', reorderPoint: 0, totalStock: 0 }); setOpen(true); };
+  const openEdit = (p: Product) => { 
+    const currentStock = stock.filter((s: any) => s.productId === p.id).reduce((acc: number, curr: any) => acc + curr.quantity, 0);
+    setEditing(p); 
+    reset({ ...p, totalStock: currentStock }); 
+    setOpen(true); 
+  };
   const onSubmit = (data: ProductForm) => editing ? updateMutation.mutate(data) : createMutation.mutate(data);
 
   const filtered = products.filter((p) =>
@@ -206,6 +212,10 @@ export default function ProductsPage() {
                 <Label>Reorder Point</Label>
                 <Input type="number" placeholder="0" {...register('reorderPoint')} />
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Total Stock <span className="text-muted font-normal text-xs ml-1">(Quick Adjust)</span></Label>
+              <Input type="number" placeholder="0" {...register('totalStock')} />
             </div>
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>

@@ -79,22 +79,58 @@ app.get('/api/products', auth, async (req, res) => {
 
 app.post('/api/products', auth, async (req, res) => {
   try {
-    const { name, sku, unitOfMeasure = 'units', reorderPoint = 0 } = req.body;
+    const { name, sku, unitOfMeasure = 'units', reorderPoint = 0, totalStock = 0 } = req.body;
     if (!name || !sku) return res.status(400).json({ error: 'Name and SKU required' });
     const existing = await prisma.product.findUnique({ where: { sku } });
     if (existing) return res.status(400).json({ error: 'SKU already exists' });
     const product = await prisma.product.create({ data: { name, sku, unitOfMeasure, reorderPoint } });
+    
+    if (totalStock > 0) {
+      const defaultWh = await prisma.warehouse.findFirst();
+      if (defaultWh) {
+        await prisma.stockLevel.create({
+          data: { productId: product.id, warehouseId: defaultWh.id, quantity: totalStock }
+        });
+        const adj = await prisma.adjustment.create({ data: { productId: product.id, warehouseId: defaultWh.id, oldQty: 0, newQty: totalStock, reason: 'Initial Stock' } });
+        await prisma.stockLedger.create({
+          data: { productId: product.id, warehouseId: defaultWh.id, change: totalStock, type: 'ADJUSTMENT', refId: adj.id }
+        });
+      }
+    }
+
     res.json(product);
   } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
 app.put('/api/products/:id', auth, async (req, res) => {
   try {
-    const { name, sku, unitOfMeasure, reorderPoint } = req.body;
+    const { name, sku, unitOfMeasure, reorderPoint, totalStock } = req.body;
     const product = await prisma.product.update({
       where: { id: req.params.id },
       data: { name, sku, unitOfMeasure, reorderPoint }
     });
+    
+    if (totalStock !== undefined) {
+      const defaultWh = await prisma.warehouse.findFirst();
+      if (defaultWh) {
+        const existing = await prisma.stockLevel.findUnique({
+          where: { productId_warehouseId: { productId: product.id, warehouseId: defaultWh.id } }
+        });
+        const oldQty = existing?.quantity ?? 0;
+        if (oldQty !== totalStock) {
+          await prisma.stockLevel.upsert({
+            where: { productId_warehouseId: { productId: product.id, warehouseId: defaultWh.id } },
+            update: { quantity: totalStock },
+            create: { productId: product.id, warehouseId: defaultWh.id, quantity: totalStock }
+          });
+          const adj = await prisma.adjustment.create({ data: { productId: product.id, warehouseId: defaultWh.id, oldQty, newQty: totalStock, reason: 'Quick Edit' } });
+          await prisma.stockLedger.create({
+            data: { productId: product.id, warehouseId: defaultWh.id, change: totalStock - oldQty, type: 'ADJUSTMENT', refId: adj.id }
+          });
+        }
+      }
+    }
+
     res.json(product);
   } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
@@ -217,6 +253,38 @@ app.post('/api/deliveries', auth, async (req, res) => {
   } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
+app.put('/api/deliveries/:id/confirm', auth, async (req, res) => {
+  try {
+    const delivery = await prisma.deliveryOrder.findUnique({
+      where: { id: req.params.id }, include: { lines: true }
+    });
+    if (!delivery) return res.status(404).json({ error: 'Not found' });
+    if (delivery.status !== 'DRAFT') return res.status(400).json({ error: 'Already processed' });
+
+    const defaultWh = await prisma.warehouse.findFirst();
+    if (!defaultWh) return res.status(400).json({ error: 'No warehouse exists.' });
+
+    for (const line of delivery.lines) {
+      const existing = await prisma.stockLevel.findUnique({
+        where: { productId_warehouseId: { productId: line.productId, warehouseId: defaultWh.id } }
+      });
+      if (!existing || existing.quantity < line.quantity) {
+        return res.status(400).json({ error: 'Insufficient stock for product id ' + line.productId });
+      }
+      await prisma.stockLevel.update({
+        where: { id: existing.id },
+        data: { quantity: existing.quantity - line.quantity }
+      });
+      await prisma.stockLedger.create({
+        data: { productId: line.productId, warehouseId: defaultWh.id, change: -line.quantity, type: 'DELIVERY', refId: delivery.id }
+      });
+    }
+
+    const updated = await prisma.deliveryOrder.update({ where: { id: delivery.id }, data: { status: 'DONE' } });
+    res.json(updated);
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+});
+
 // ───── Transfers ────────────────────────────────
 app.get('/api/transfers', auth, async (req, res) => {
   const transfers = await prisma.transfer.findMany({
@@ -243,6 +311,53 @@ app.post('/api/transfers', auth, async (req, res) => {
       include: { lines: true, fromWarehouse: true, toWarehouse: true }
     });
     res.json(transfer);
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+});
+
+app.put('/api/transfers/:id/confirm', auth, async (req, res) => {
+  try {
+    const transfer = await prisma.transfer.findUnique({
+      where: { id: req.params.id }, include: { lines: true }
+    });
+    if (!transfer) return res.status(404).json({ error: 'Not found' });
+    if (transfer.status !== 'DRAFT') return res.status(400).json({ error: 'Already processed' });
+
+    for (const line of transfer.lines) {
+      const existingFrom = await prisma.stockLevel.findUnique({
+        where: { productId_warehouseId: { productId: line.productId, warehouseId: transfer.fromWarehouseId } }
+      });
+      if (!existingFrom || existingFrom.quantity < line.quantity) {
+        return res.status(400).json({ error: 'Insufficient stock in source warehouse for product id ' + line.productId });
+      }
+      await prisma.stockLevel.update({
+        where: { id: existingFrom.id },
+        data: { quantity: existingFrom.quantity - line.quantity }
+      });
+
+      const existingTo = await prisma.stockLevel.findUnique({
+        where: { productId_warehouseId: { productId: line.productId, warehouseId: transfer.toWarehouseId } }
+      });
+      if (existingTo) {
+        await prisma.stockLevel.update({
+          where: { id: existingTo.id },
+          data: { quantity: existingTo.quantity + line.quantity }
+        });
+      } else {
+        await prisma.stockLevel.create({
+          data: { productId: line.productId, warehouseId: transfer.toWarehouseId, quantity: line.quantity }
+        });
+      }
+
+      await prisma.stockLedger.create({
+        data: { productId: line.productId, warehouseId: transfer.fromWarehouseId, change: -line.quantity, type: 'TRANSFER', refId: transfer.id }
+      });
+      await prisma.stockLedger.create({
+        data: { productId: line.productId, warehouseId: transfer.toWarehouseId, change: line.quantity, type: 'TRANSFER', refId: transfer.id }
+      });
+    }
+
+    const updated = await prisma.transfer.update({ where: { id: transfer.id }, data: { status: 'DONE' } });
+    res.json(updated);
   } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
