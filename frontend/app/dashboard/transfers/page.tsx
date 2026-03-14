@@ -51,14 +51,14 @@ export default function TransfersPage() {
     createM.mutate({ ...form, lines });
   };
 
-  const S = { card: { backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: '10px', overflow: 'hidden' as const }, th: { padding: '10px 16px', fontSize: '12px', color: '#6B7280', fontWeight: 600, textAlign: 'left' as const, background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }, td: { padding: '12px 16px', fontSize: '14px', color: '#111827', borderBottom: '1px solid #F3F4F6' }, select: { padding: '9px 12px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px', width: '100%' } };
+  const S = { card: { backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' as const }, th: { padding: '10px 16px', fontSize: '12px', color: 'var(--muted)', fontWeight: 600, textAlign: 'left' as const, background: 'var(--surface)', borderBottom: '1px solid var(--border)' }, td: { padding: '12px 16px', fontSize: '14px', color: 'var(--foreground)', borderBottom: '1px solid var(--border)' }, select: { padding: '9px 12px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '14px', width: '100%' } };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
-          <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#111827', margin: 0 }}>Transfers</h1>
-          <p style={{ color: '#6B7280', fontSize: '14px', margin: '4px 0 0' }}>Move stock between warehouses</p>
+          <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--foreground)', margin: 0 }}>Transfers</h1>
+          <p style={{ color: 'var(--muted)', fontSize: '14px', margin: '4px 0 0' }}>Move stock between warehouses</p>
         </div>
         <button onClick={() => setOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#6C63FF', color: 'white', border: 'none', borderRadius: '8px', padding: '10px 16px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
           <Plus size={16} /> New Transfer
@@ -78,12 +78,12 @@ export default function TransfersPage() {
                     <td style={S.td}>{t.toWarehouse.name}</td>
                     <td style={S.td}>{t.lines.length} item(s)</td>
                     <td style={S.td}><span style={{ ...statusColor[t.status], padding: '2px 10px', borderRadius: '999px', fontSize: '12px', fontWeight: 600 }}>{t.status}</span></td>
-                    <td style={{ ...S.td, color: '#6B7280' }}>{new Date(t.createdAt).toLocaleDateString()}</td>
+                    <td style={{ ...S.td, color: 'var(--muted)' }}>{new Date(t.createdAt).toLocaleDateString()}</td>
                   </tr>
                   {expanded === t.id && (
-                    <tr key={`${t.id}-exp`}><td colSpan={5} style={{ padding: 0, background: '#F9FAFB' }}>
+                    <tr key={`${t.id}-exp`}><td colSpan={5} style={{ padding: 0, background: 'var(--surface)' }}>
                       <div style={{ padding: '12px 24px' }}>
-                        {t.lines.map((l, i) => <div key={i} style={{ fontSize: '13px', color: '#374151' }}>• {l.product.name} — <b>{l.quantity}</b> units</div>)}
+                        {t.lines.map((l, i) => <div key={i} style={{ fontSize: '13px', color: 'var(--foreground)' }}>• {l.product.name} — <b>{l.quantity}</b> units</div>)}
                       </div>
                     </td></tr>
                   )}
@@ -96,19 +96,19 @@ export default function TransfersPage() {
 
       {open && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ background: '#fff', borderRadius: '12px', padding: '28px', width: '520px', maxHeight: '90vh', overflowY: 'auto' }}>
-            <h2 style={{ margin: '0 0 20px', fontSize: '18px', fontWeight: 700, color: '#111827' }}>New Transfer</h2>
+          <div style={{ background: 'var(--card)', borderRadius: '12px', padding: '28px', width: '520px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <h2 style={{ margin: '0 0 20px', fontSize: '18px', fontWeight: 700, color: 'var(--foreground)' }}>New Transfer</h2>
             <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '13px', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '6px' }}>From Warehouse</label>
+                  <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground)', display: 'block', marginBottom: '6px' }}>From Warehouse</label>
                   <select value={form.fromWarehouseId} onChange={(e) => setForm({ ...form, fromWarehouseId: e.target.value })} style={S.select}>
                     <option value="">Select</option>
                     {warehouses.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label style={{ fontSize: '13px', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '6px' }}>To Warehouse</label>
+                  <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground)', display: 'block', marginBottom: '6px' }}>To Warehouse</label>
                   <select value={form.toWarehouseId} onChange={(e) => setForm({ ...form, toWarehouseId: e.target.value })} style={S.select}>
                     <option value="">Select</option>
                     {warehouses.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
@@ -117,22 +117,22 @@ export default function TransfersPage() {
               </div>
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <label style={{ fontSize: '13px', fontWeight: 600, color: '#374151' }}>Lines</label>
+                  <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground)' }}>Lines</label>
                   <button type="button" onClick={addLine} style={{ fontSize: '12px', color: '#6C63FF', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>+ Add Line</button>
                 </div>
                 {lines.map((l, i) => (
                   <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '8px', marginBottom: '8px' }}>
-                    <select value={l.productId} onChange={(e) => updateLine(i, 'productId', e.target.value)} style={{ padding: '9px 12px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px' }}>
+                    <select value={l.productId} onChange={(e) => updateLine(i, 'productId', e.target.value)} style={{ padding: '9px 12px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '14px' }}>
                       <option value="">Select product</option>
                       {products.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                     </select>
-                    <input type="number" min="1" value={l.quantity} onChange={(e) => updateLine(i, 'quantity', +e.target.value)} style={{ width: '80px', padding: '9px 12px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px' }} />
+                    <input type="number" min="1" value={l.quantity} onChange={(e) => updateLine(i, 'quantity', +e.target.value)} style={{ width: '80px', padding: '9px 12px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '14px' }} />
                   </div>
                 ))}
               </div>
               <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                <button type="button" onClick={() => setOpen(false)} style={{ padding: '9px 18px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px', background: '#fff', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" disabled={createM.isPending} style={{ padding: '9px 18px', backgroundColor: '#6C63FF', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
+                <button type="button" onClick={() => setOpen(false)} style={{ padding: '9px 18px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '14px', background: 'var(--card)', cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" disabled={createM.isPending} style={{ padding: '9px 18px', backgroundColor: '#6C63FF', color: 'var(--card)', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
                   {createM.isPending ? 'Creating...' : 'Create Transfer'}
                 </button>
               </div>

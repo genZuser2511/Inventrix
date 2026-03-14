@@ -35,14 +35,14 @@ export default function AdjustmentsPage() {
     createM.mutate({ ...form, newQty: +form.newQty });
   };
 
-  const S = { card: { backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: '10px', overflow: 'hidden' as const }, th: { padding: '10px 16px', fontSize: '12px', color: '#6B7280', fontWeight: 600, textAlign: 'left' as const, background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }, td: { padding: '12px 16px', fontSize: '14px', color: '#111827', borderBottom: '1px solid #F3F4F6' } };
+  const S = { card: { backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' as const }, th: { padding: '10px 16px', fontSize: '12px', color: 'var(--muted)', fontWeight: 600, textAlign: 'left' as const, background: 'var(--surface)', borderBottom: '1px solid var(--border)' }, td: { padding: '12px 16px', fontSize: '14px', color: 'var(--foreground)', borderBottom: '1px solid var(--border)' } };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
-          <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#111827', margin: 0 }}>Adjustments</h1>
-          <p style={{ color: '#6B7280', fontSize: '14px', margin: '4px 0 0' }}>Manually correct stock quantities</p>
+          <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--foreground)', margin: 0 }}>Adjustments</h1>
+          <p style={{ color: 'var(--muted)', fontSize: '14px', margin: '4px 0 0' }}>Manually correct stock quantities</p>
         </div>
         <button onClick={() => setOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#6C63FF', color: 'white', border: 'none', borderRadius: '8px', padding: '10px 16px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
           <Plus size={16} /> New Adjustment
@@ -61,10 +61,10 @@ export default function AdjustmentsPage() {
                   <tr key={a.id}>
                     <td style={S.td}><b>{a.product.name}</b><br /><span style={{ fontSize: '12px', color: '#9CA3AF' }}>{a.product.sku}</span></td>
                     <td style={S.td}>{a.warehouse.name}</td>
-                    <td style={{ ...S.td, color: '#6B7280' }}>{a.oldQty}</td>
+                    <td style={{ ...S.td, color: 'var(--muted)' }}>{a.oldQty}</td>
                     <td style={{ ...S.td, fontWeight: 700 }}>{a.newQty}</td>
                     <td style={S.td}><span style={{ color: diff >= 0 ? '#15803D' : '#B91C1C', fontWeight: 700 }}>{diff >= 0 ? '+' : ''}{diff}</span></td>
-                    <td style={{ ...S.td, color: '#6B7280' }}>{a.reason || '—'}</td>
+                    <td style={{ ...S.td, color: 'var(--muted)' }}>{a.reason || '—'}</td>
                     <td style={{ ...S.td, color: '#9CA3AF', fontSize: '13px' }}>{new Date(a.createdAt).toLocaleDateString()}</td>
                   </tr>
                 );
@@ -76,35 +76,35 @@ export default function AdjustmentsPage() {
 
       {open && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ background: '#fff', borderRadius: '12px', padding: '28px', width: '460px' }}>
-            <h2 style={{ margin: '0 0 20px', fontSize: '18px', fontWeight: 700, color: '#111827' }}>New Adjustment</h2>
+          <div style={{ background: 'var(--card)', borderRadius: '12px', padding: '28px', width: '460px' }}>
+            <h2 style={{ margin: '0 0 20px', fontSize: '18px', fontWeight: 700, color: 'var(--foreground)' }}>New Adjustment</h2>
             <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {[
                 { label: 'Product', field: 'productId', opts: products, optLabel: (p: Product) => `${p.name} (${p.sku})` },
                 { label: 'Warehouse', field: 'warehouseId', opts: warehouses, optLabel: (w: Warehouse) => w.name },
               ].map(({ label, field, opts, optLabel }) => (
                 <div key={field}>
-                  <label style={{ fontSize: '13px', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '6px' }}>{label}</label>
+                  <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground)', display: 'block', marginBottom: '6px' }}>{label}</label>
                   <select value={(form as any)[field]} onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-                    style={{ width: '100%', padding: '9px 12px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px' }}>
+                    style={{ width: '100%', padding: '9px 12px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '14px' }}>
                     <option value="">Select {label}</option>
                     {(opts as any[]).map((o: any) => <option key={o.id} value={o.id}>{optLabel(o)}</option>)}
                   </select>
                 </div>
               ))}
               <div>
-                <label style={{ fontSize: '13px', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '6px' }}>New Quantity</label>
+                <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground)', display: 'block', marginBottom: '6px' }}>New Quantity</label>
                 <input type="number" min="0" value={form.newQty} onChange={(e) => setForm({ ...form, newQty: e.target.value })}
-                  placeholder="0" style={{ width: '100%', padding: '9px 12px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box' }} />
+                  placeholder="0" style={{ width: '100%', padding: '9px 12px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box' }} />
               </div>
               <div>
-                <label style={{ fontSize: '13px', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '6px' }}>Reason (optional)</label>
+                <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground)', display: 'block', marginBottom: '6px' }}>Reason (optional)</label>
                 <input value={form.reason} onChange={(e) => setForm({ ...form, reason: e.target.value })}
-                  placeholder="e.g. Physical count, damage" style={{ width: '100%', padding: '9px 12px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box' }} />
+                  placeholder="e.g. Physical count, damage" style={{ width: '100%', padding: '9px 12px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box' }} />
               </div>
               <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '4px' }}>
-                <button type="button" onClick={() => setOpen(false)} style={{ padding: '9px 18px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px', background: '#fff', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" disabled={createM.isPending} style={{ padding: '9px 18px', backgroundColor: '#6C63FF', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
+                <button type="button" onClick={() => setOpen(false)} style={{ padding: '9px 18px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '14px', background: 'var(--card)', cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" disabled={createM.isPending} style={{ padding: '9px 18px', backgroundColor: '#6C63FF', color: 'var(--card)', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
                   {createM.isPending ? 'Applying...' : 'Apply Adjustment'}
                 </button>
               </div>

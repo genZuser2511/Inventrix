@@ -39,7 +39,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F9FAFB', padding: '1rem' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--surface)', padding: '1rem' }}>
       <div style={{ width: '100%', maxWidth: '420px' }}>
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '32px' }}>
@@ -48,33 +48,33 @@ export default function LoginPage() {
         </div>
 
         {/* Card */}
-        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '12px', padding: '32px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#111827', margin: '0 0 4px 0' }}>Sign In</h1>
-          <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 24px 0' }}>Enter your credentials to access your account</p>
+        <div style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '12px', padding: '32px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+          <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--foreground)', margin: '0 0 4px 0' }}>Sign In</h1>
+          <p style={{ fontSize: '14px', color: 'var(--muted)', margin: '0 0 24px 0' }}>Enter your credentials to access your account</p>
 
           <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '6px' }}>Email</label>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--foreground)', marginBottom: '6px' }}>Email</label>
               <input
                 type="email"
                 placeholder="name@company.com"
                 {...register('email')}
-                style={{ width: '100%', padding: '10px 12px', border: `1px solid ${errors.email ? '#B91C1C' : '#E5E7EB'}`, borderRadius: '8px', fontSize: '14px', color: '#111827', backgroundColor: '#F9FAFB', outline: 'none', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '10px 12px', border: `1px solid ${errors.email ? '#B91C1C' : 'var(--border)'}`, borderRadius: '8px', fontSize: '14px', color: 'var(--foreground)', backgroundColor: 'var(--surface)', outline: 'none', boxSizing: 'border-box' }}
                 onFocus={(e) => e.target.style.borderColor = '#6C63FF'}
-                onBlur={(e) => e.target.style.borderColor = errors.email ? '#B91C1C' : '#E5E7EB'}
+                onBlur={(e) => e.target.style.borderColor = errors.email ? '#B91C1C' : 'var(--border)'}
               />
               {errors.email && <p style={{ color: '#B91C1C', fontSize: '12px', marginTop: '4px' }}>{errors.email.message}</p>}
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '6px' }}>Password</label>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--foreground)', marginBottom: '6px' }}>Password</label>
               <input
                 type="password"
                 placeholder="••••••••"
                 {...register('password')}
-                style={{ width: '100%', padding: '10px 12px', border: `1px solid ${errors.password ? '#B91C1C' : '#E5E7EB'}`, borderRadius: '8px', fontSize: '14px', color: '#111827', backgroundColor: '#F9FAFB', outline: 'none', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '10px 12px', border: `1px solid ${errors.password ? '#B91C1C' : 'var(--border)'}`, borderRadius: '8px', fontSize: '14px', color: 'var(--foreground)', backgroundColor: 'var(--surface)', outline: 'none', boxSizing: 'border-box' }}
                 onFocus={(e) => e.target.style.borderColor = '#6C63FF'}
-                onBlur={(e) => e.target.style.borderColor = errors.password ? '#B91C1C' : '#E5E7EB'}
+                onBlur={(e) => e.target.style.borderColor = errors.password ? '#B91C1C' : 'var(--border)'}
               />
               {errors.password && <p style={{ color: '#B91C1C', fontSize: '12px', marginTop: '4px' }}>{errors.password.message}</p>}
             </div>
@@ -91,7 +91,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p style={{ marginTop: '24px', textAlign: 'center', fontSize: '14px', color: '#6B7280' }}>
+          <p style={{ marginTop: '24px', textAlign: 'center', fontSize: '14px', color: 'var(--muted)' }}>
             Don&apos;t have an account?{' '}
             <Link href="/register" style={{ color: '#6C63FF', fontWeight: 600, textDecoration: 'none' }}>Create one</Link>
           </p>

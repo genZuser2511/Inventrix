@@ -20,13 +20,13 @@ export default function LedgerPage() {
     queryKey: ['ledger'], queryFn: () => apiFetch('/ledger', {}, token),
   });
 
-  const S = { card: { backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: '10px', overflow: 'hidden' as const }, th: { padding: '10px 16px', fontSize: '12px', color: '#6B7280', fontWeight: 600, textAlign: 'left' as const, background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }, td: { padding: '12px 16px', fontSize: '14px', color: '#111827', borderBottom: '1px solid #F3F4F6' } };
+  const S = { card: { backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' as const }, th: { padding: '10px 16px', fontSize: '12px', color: 'var(--muted)', fontWeight: 600, textAlign: 'left' as const, background: 'var(--surface)', borderBottom: '1px solid var(--border)' }, td: { padding: '12px 16px', fontSize: '14px', color: 'var(--foreground)', borderBottom: '1px solid var(--border)' } };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div>
-        <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#111827', margin: 0 }}>Stock Ledger</h1>
-        <p style={{ color: '#6B7280', fontSize: '14px', margin: '4px 0 0' }}>Full audit trail of all stock movements (last 100 entries)</p>
+        <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--foreground)', margin: 0 }}>Stock Ledger</h1>
+        <p style={{ color: 'var(--muted)', fontSize: '14px', margin: '4px 0 0' }}>Full audit trail of all stock movements (last 100 entries)</p>
       </div>
 
       <div style={S.card}>
@@ -61,7 +61,7 @@ export default function LedgerPage() {
                     <span style={{ fontWeight: 600 }}>{e.product.name}</span>
                     <br /><span style={{ fontSize: '12px', color: '#9CA3AF' }}>{e.product.sku}</span>
                   </td>
-                  <td style={{ ...S.td, color: '#374151' }}>{e.warehouse.name}</td>
+                  <td style={{ ...S.td, color: 'var(--foreground)' }}>{e.warehouse.name}</td>
                   <td style={S.td}>
                     <span style={{ fontWeight: 700, fontSize: '15px', color: e.change >= 0 ? '#15803D' : '#B91C1C' }}>
                       {e.change >= 0 ? '+' : ''}{e.change}
